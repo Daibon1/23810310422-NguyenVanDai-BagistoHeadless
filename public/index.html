@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta name="google" content="notranslate">
+    <title>Kết quả Lab - Nguyễn Văn Đại</title>
+    <style>
+        /* CSS để giao diện trông chuyên nghiệp và nổi bật */
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; }
+        
+        /* Header với màu sắc nổi bật theo yêu cầu */
+        .header { 
+            background: linear-gradient(135deg, #2c3e50, #2980b9); 
+            color: white; 
+            padding: 30px; 
+            text-align: center; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .header h1 { margin: 0; font-size: 24px; }
+        .student-info { 
+            color: #ffcc00; /* Màu vàng nổi bật cho Họ tên và MSSV */
+            font-size: 20px; 
+            margin-top: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* Bố cục danh sách sản phẩm dạng thẻ (Cards) */
+        .container { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 25px; 
+            padding: 40px; 
+            justify-content: center; 
+        }
+
+        /* Thiết kế thẻ Card cho mỗi sản phẩm */
+        .card { 
+            background: white; 
+            border-radius: 12px; 
+            width: 260px; 
+            padding: 20px; 
+            text-align: center; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            transition: transform 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); }
+        
+        .product-name { color: #333; font-size: 18px; height: 50px; overflow: hidden; }
+        
+        /* Định dạng giá tiền */
+        .product-price { 
+            color: #27ae60; 
+            font-size: 22px; 
+            font-weight: bold; 
+            margin: 15px 0; 
+        }
+
+        /* Nút chi tiết */
+        .btn-detail { 
+            background-color: #e67e22; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .btn-detail:hover { background-color: #d35400; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>BÀI THỰC HÀNH HEADLESS COMMERCE</h1>
+        <div class="student-info">Sinh viên: Nguyễn Văn Đại - MSSV: 23810310422</div>
+    </div>
+
+    <div class="container" id="product-list">
+        <p>Đang tải danh sách sản phẩm từ Bagisto API...</p>
+    </div>
+
+    <script>
+        /**
+         * HÀM GỌI API TỪ BAGISTO SỬ DỤNG FETCH
+         */
+        async function fetchProducts() {
+            try {
+                // Sử dụng Fetch API để gửi yêu cầu POST đến endpoint GraphQL
+                const response = await fetch('http://127.0.0.1:8000/graphql', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    // Body chứa câu truy vấn GraphQL (Query 2)
+                    body: JSON.stringify({
+                        query: `
+                            query {
+                                products {
+                                    id
+                                    name
+                                    price
+                                    description
+                                }
+                            }
+                        `
+                    })
+                });
+
+                const result = await response.json();
+                
+                // Lấy mảng sản phẩm từ kết quả trả về
+                const products = result.data.products;
+                const listContainer = document.getElementById('product-list');
+                listContainer.innerHTML = ''; // Xóa dòng chữ đang tải
+
+                // Duyệt qua danh sách sản phẩm và tạo giao diện thẻ Card
+                products.forEach(product => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    
+                    // Định dạng tiền tệ VND (vi-VN) cho giá sản phẩm
+                    const formattedPrice = new Intl.NumberFormat('vi-VN', {
+                        style: 'currency',
+                        currency: 'VND'
+                    }).format(product.price || 0);
+
+                    card.innerHTML = `
+                        <h3 class="product-name">${product.name}</h3>
+                        <p class="product-price">${formattedPrice}</p>
+                        <button class="btn-detail">Chi tiết</button>
+                    `;
+                    
+                    listContainer.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error("Lỗi kết nối API:", error);
+                document.getElementById('product-list').innerHTML = 
+                    "<p style='color:red'>Không thể kết nối API. Hãy kiểm tra 'php artisan serve' và CORS.</p>";
+            }
+        }
+
+        // Gọi hàm thực thi khi trang web tải xong
+        fetchProducts();
+    </script>
+</body>
+</html>

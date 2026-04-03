@@ -1,0 +1,25 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "BuiVietHoang-AoThun",
+      "price": 100000,
+      "description": "Áo đẹp",
+      "url_key": "ao"
+    },
+    {
+      "id": 2,
+      "name": "BuiVietHoang_Quan",
+      "price": 200000,
+      "description": "Quần đẹp",
+      "url_key": "quan"
+    },
+    {
+      "id": 3,
+      "name": "BuiVietHoang-AoBomber",
+      "price": 300000,
+      "description": "Aó Khoác",
+      "url_key": "Aó"
+    }
+  ]
+}
